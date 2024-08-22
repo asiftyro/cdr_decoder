@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>CDR Decoder</title>
+    <link rel="stylesheet" href="dark.min.css">
+</head>
+
+<body>
+
+    <h1>CDR Decoder</h1>
+    <div>
+        <label for="cdr_type">CDR Type</label>
+        <select name="cdr_type" id="cdr_type">
+            <option value="SMS Send CDR: (TXN + Promo)">SMS Send CDR: (TXN + Promo)</option>
+            <option value="CLI Activity CDR: (MNO + IPTSP)">CLI Activity CDR: (MNO + IPTSP)</option>
+            <option value="MNO CLI De/Registration CDR: (MNO)">MNO CLI De/Registration CDR: (MNO)</option>
+            <option value="IP Approval CDR">IP Approval CDR</option>
+            <option value="Campaign Approval CDR">Campaign Approval CDR</option>
+        </select>
+        <br>
+        <br>
+        <label for="encoded_cdr">Encoded CDR</label>
+        <textarea name="encoded_cdr" id="encoded_cdr"></textarea>
+        <br>
+        <br>
+        <button id="convert_cdr"="convert_cdr">Convert</button>
+        <button id="clear_cdr"="clear_cdr">Clear</button>
+    </div>
+    <br>
+    <hr>
+    <div id="decoded_cdr" name="decoded_cdr"></div>
+
+    <script>
+        var encoded_cdr = document.getElementById("encoded_cdr");
+        var convert_cdr = document.getElementById("convert_cdr");
+        var decoded_cdr = document.getElementById("decoded_cdr");
+        var clear_cdr = document.getElementById("clear_cdr");
+
+
+
+
+        function get_header_of_cdr_type() {
+            var cdr_type = document.getElementById("cdr_type");
+            cdr_type_value = cdr_type.value;
+            if (cdr_type_value == "SMS Send CDR: (TXN + Promo)") {
+                return "userId|clientId|clientName|requestApiKey|masterKey|username|usernameSecondary|billMsisdn|billMsisdnSecondary|cli|transactionType|messageType|isLongSMS|msisdn|campaignId|clientValidationHttpStatus|clientValidationResponse|clientValidationRequestTime|clientValidationResponseTime|contentValidationHttpStatus|contentRejectionReason|isContentValid|contentValidationRequestTime|contentValidationResponseTime|campaignValidatorUsername|campaignValidatorName|campaignCreateDate|campaignValidationDate|campaignStatus|dndHttpStatus|dndResponseCode|dndResponseMessage|dndRequestTime|dndResponseTime|isDnd|eventProduceTime|isEventPublished|eventConsumedTime|mnpDippingHttpStatus|mnpDippingResponseCode|mnpDippingRequestTime|mnpDippingResponseTime|subscriberRnCode|subscriberOperator|applicableSmsGateway|applicableSmsGatewayBaseUrl|finalBillMsisdnAttempted|isMno|ansClientTransactionId|ansHttpStatus|ansResponseCode|ansReference|ansResponseMessage|ansRequestTime|ansResponseTime|a2pResponseCode|tariff|billingType|content|isUnicode|messageCount|messageLength|transactionId|requestTime|responseTime|uri|sourceIP|port|method";
+            }
+            else if (cdr_type_value == "CLI Activity CDR: (MNO + IPTSP)") {
+                return "CLI|billMSISDN|asnType|ansName|partnerId|clientId|clientName|currentStatus|currentRegistrationStatus|actionTime|changedBy|activity";
+            }
+            else if (cdr_type_value == "MNO CLI De/Registration CDR: (MNO)") {
+                return "username|vmsisdn|cli|partnerIdentity|cliProcessCode|ansTransactionId|operatorValidationReqTime|operatorValidationRespTime|operatorValidationHttpStatus|operatorName|a2pSetupReqTime|a2pSetupRespTime|a2pSetupHttpStatus|a2pResponseCode|transactionId|requestTime|responseTime|uri|sourceIp|port|method";
+            }
+            else if (cdr_type_value == "IP Approval CDR") {
+                return "username|vmsisdn|cli|partnerIdentity|cliProcessCode|ansTransactionId|operatorValidationReqTime|operatorValidationRespTime|operatorValidationHttpStatus|operatorName|a2pSetupReqTime|a2pSetupRespTime|a2pSetupHttpStatus|a2pResponseCode|transactionId|requestTime|responseTime|uri|sourceIp|port|method";
+            }
+            else if (cdr_type_value == "Campaign Approval CDR") {
+                return "clientID|clientName|campaignName|campaignID|isMNO|billMSISDN|CLI|content|isDynamic|campaignStartDate|campaignEndDate|requestTime|validationTime|validator|changedStatus|commentFromValidator|terminationTime";
+            }
+        }
+
+        clear_cdr.addEventListener('click', (evt) => {
+            encoded_cdr.value = "";
+            decoded_cdr.innerHTML = "";
+        });
+
+        convert_cdr.addEventListener('click', (evt) => {
+            var header_string = get_header_of_cdr_type();
+            var header_arr = header_string.split('|');
+            decoded_cdr.innerHTML = "";
+            encoded_cdr_arr = encoded_cdr.value.split('|');
+            if(header_arr.length!=encoded_cdr_arr.length){
+                alert("Field mismatch. Check CDR Type and Encoded CDR.");
+                return;
+            }
+            for (i = 0; i < header_arr.length; i++) {
+                decoded_cdr.innerHTML += String(i).padStart(2, '0') + ". " + header_arr[i] + " : " + encoded_cdr_arr[i] + '<br>';
+            };
+        });
+    </script>
+</body>
+
+</html>
